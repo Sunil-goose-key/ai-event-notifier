@@ -1,0 +1,33 @@
+ {
+    "email_settings": {
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "sender_name": "AI Event Notifier"
+    },
+    "event_settings": {
+        "search_keywords": [
+            "artificial intelligence",
+            "machine learning",
+            "AI",
+            "MCP",
+            "model context protocol",
+            "deep learning",
+            "neural networks",
+            "chatgpt",
+            "openai",
+            "llm",
+            "large language models",
+            "generative ai",
+            "transformer",
+            "bert",
+            "gpt"
+        ],
+        "days_ahead": 30,
+        "max_events": 50
+    },
+    "schedule_settings": {
+        "frequency": "weekly",
+        "day_of_week": "friday",
+        "time": "18:00"
+    }
+}
