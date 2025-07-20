@@ -6,29 +6,44 @@ on:
 
 jobs:
   send-monday-digest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Try different Ubuntu version
     steps:
       - uses: actions/checkout@v4
       
-      - name: Set up Python 3.11
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.10.12'  # Specific stable version
       
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-dev
-      
-      - name: Upgrade pip and install dependencies
+      - name: Force reinstall Python email modules
         run: |
           python -m pip install --upgrade pip
-          pip install --no-cache-dir requests python-dotenv
+          python -c "import sys; print(f'Python version: {sys.version}')"
+          python -c "import email; print(f'Email module path: {email.__file__}')"
       
-      - name: Verify Python installation
+      - name: Test email imports with debugging
         run: |
-          python -c "from email.mime.text import MimeText; print('Email module working')"
-          python -c "import smtplib; print('SMTP module working')"
+          python -c "
+          import sys
+          import os
+          print('Python executable:', sys.executable)
+          print('Python path:', sys.path[0])
+          
+          # Try to import and show what's available
+          import email.mime.text as emt
+          print('Available in email.mime.text:', dir(emt))
+          
+          try:
+              from email.mime.text import MIMEText
+              print('SUCCESS: MIMEText imported')
+          except ImportError as e:
+              print('IMPORT ERROR:', e)
+              # Show the actual file contents
+              print('Module file:', emt.__file__)
+          "
+      
+      - name: Install dependencies
+        run: pip install requests python-dotenv
       
       - name: Send Monday AI Event Digest
         env:
@@ -37,6 +52,3 @@ jobs:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
         run: python Ai-event_notifier.py
-
-      - name: Log completion
-        run: echo "Monday digest sent successfully at $(date)"
