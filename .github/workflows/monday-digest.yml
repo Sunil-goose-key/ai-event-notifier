@@ -9,13 +9,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
       
-      - name: Install dependencies
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install system dependencies
         run: |
-          pip install requests python-dotenv
+          sudo apt-get update
+          sudo apt-get install -y python3-dev
+      
+      - name: Upgrade pip and install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --no-cache-dir requests python-dotenv
+      
+      - name: Verify Python installation
+        run: |
+          python -c "from email.mime.text import MimeText; print('Email module working')"
+          python -c "import smtplib; print('SMTP module working')"
       
       - name: Send Monday AI Event Digest
         env:
